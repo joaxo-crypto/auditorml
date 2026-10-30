@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autorizacion recibida</title>
+<style>
+  :root{ --bg:#111310; --card:#1b1e19; --ink:#edefe9; --dim:#9aa093;
+         --yellow:#ebc25a; --green:#35c47a; --rule:#33372f; }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+       background:var(--bg);color:var(--ink);padding:24px;
+       font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:14px;
+        padding:32px;max-width:640px;width:100%}
+  h1{margin:0 0 6px;font-size:1.35rem;letter-spacing:-.02em}
+  p{margin:0 0 18px;color:var(--dim);line-height:1.5;font-size:.95rem}
+  .code{background:#0c0e0b;border:1px dashed var(--rule);border-radius:10px;
+        padding:16px;font-family:ui-monospace,Menlo,Consolas,monospace;
+        font-size:1rem;word-break:break-all;color:var(--yellow)}
+  button{margin-top:16px;background:var(--yellow);color:#111310;border:0;
+         border-radius:8px;padding:11px 18px;font-weight:600;font-size:.95rem;cursor:pointer}
+  button:hover{filter:brightness(1.08)}
+  .ok{color:var(--green);font-weight:600}
+  .err{color:#e0906b}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1 id="title">Autorización recibida</h1>
+    <p id="sub">Copiá este código y pegalo donde te lo pida el programa. Dura unos minutos y se usa una sola vez.</p>
+    <div class="code" id="code">—</div>
+    <button id="copy" type="button">Copiar código</button>
+  </div>
+<script>
+  var params = new URLSearchParams(window.location.search);
+  var code = params.get("code");
+  var error = params.get("error");
+  var box = document.getElementById("code");
+  var btn = document.getElementById("copy");
+
+  if (code) {
+    box.textContent = code;
+  } else if (error) {
+    document.getElementById("title").textContent = "No se pudo autorizar";
+    document.getElementById("title").className = "err";
+    document.getElementById("sub").textContent = "Mercado Libre devolvió este error:";
+    box.textContent = error + (params.get("error_description") ? " — " + params.get("error_description") : "");
+    btn.style.display = "none";
+  } else {
+    document.getElementById("title").textContent = "Página de retorno";
+    document.getElementById("sub").textContent = "Esta página solo sirve como punto de llegada después de autorizar en Mercado Libre. Si llegaste acá sin pasar por ahí, no hay nada que copiar.";
+    box.textContent = "—";
+    btn.style.display = "none";
+  }
+
+  btn.addEventListener("click", function () {
+    navigator.clipboard.writeText(box.textContent).then(function () {
+      btn.textContent = "Copiado";
+      btn.className = "ok";
+      setTimeout(function () { btn.textContent = "Copiar código"; btn.className = ""; }, 1800);
+    });
+  });
+</script>
+</body>
+</html>
