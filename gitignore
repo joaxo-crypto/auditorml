@@ -1,0 +1,6 @@
+# Credenciales y tokens: NUNCA se suben
+.env
+tokens.json
+*.secret
+secret*.txt
+client_secret*
